@@ -3,7 +3,7 @@ using System;
 
 namespace Domain.Entities.Customer
 {
-    public abstract class Customer : Entity<int>
+    public abstract class Customer : DomainEntity<int>
     {
         public string FirstName { get; set; }
 
@@ -11,7 +11,7 @@ namespace Domain.Entities.Customer
 
         public string FullName { get; }
 
-        public DateTime BirthDate { get; set; }
+        public DateTime BirthDateUtc { get; set; }
 
         public string Email { get; set; }
 
@@ -27,11 +27,11 @@ namespace Domain.Entities.Customer
         {
             get
             {
-                DateTime nowDate = DateTime.Now;
+                DateTime nowDateUtc = DateTime.UtcNow;
 
-                int age = nowDate.Year - BirthDate.Year;
+                int age = nowDateUtc.Year - BirthDateUtc.Year;
 
-                if (nowDate.Month < BirthDate.Month || (nowDate.Month == BirthDate.Month && nowDate.Day < BirthDate.Day))
+                if (nowDateUtc.Month < BirthDateUtc.Month || (nowDateUtc.Month == BirthDateUtc.Month && nowDateUtc.Day < BirthDateUtc.Day))
                     age--;
 
                 return age;

@@ -2,18 +2,18 @@
 
 namespace Domain.Base
 {
-    public abstract class Entity<TId> : Entity where TId : struct
+    public abstract class DomainEntity<TId> : DomainEntity where TId : struct
     {
         public TId Id { get; set; }
     }
 
-    public abstract class Entity 
+    public abstract class DomainEntity
     {
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDateUtc { get; set; }
 
         public string CreatedBy { get; set; }
 
-        public DateTime? UpdatedDate { get; set; }
+        public DateTime? UpdatedDateUtc { get; set; }
 
         public string UpdatedBy { get; set; }
 
