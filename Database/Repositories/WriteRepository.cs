@@ -38,6 +38,7 @@ namespace Database.Repositories
         public async Task<int> AddAsync(TEntity entity, bool saveChanges = false)
         {
             int result = 0;
+            entity.SetCreatedAudit();
             await _dbContext.Set<TEntity>().AddAsync(entity);
 
             if (saveChanges)
@@ -56,6 +57,7 @@ namespace Database.Repositories
         public async Task<int> AddRangeAsync(IEnumerable<TEntity> entities, bool saveChanges = false)
         {
             int result = 0;
+            entities.ToList().ForEach(e => e.SetCreatedAudit());
             await _dbContext.Set<TEntity>().AddRangeAsync(entities);
 
             if (saveChanges)
@@ -100,10 +102,20 @@ namespace Database.Repositories
         /// Remove entity
         /// </summary>
         /// <param name="entity"></param>
+        /// <param name="softDelete"></param>
+        /// <param name="saveChanges"></param>
         /// <returns></returns>
-        public async Task RemoveAsync(TEntity entity, bool saveChanges = false)
+        public async Task RemoveAsync(TEntity entity, bool softDelete = true,  bool saveChanges = false)
         {
-            _dbContext.Set<TEntity>().Remove(entity);
+            if (softDelete)
+            {
+                entity.SetDeleted();
+                _dbContext.Entry(entity).State = EntityState.Modified;
+            }
+            else 
+            {
+                _dbContext.Set<TEntity>().Remove(entity);
+            }
 
             if (saveChanges)
             {
@@ -115,10 +127,20 @@ namespace Database.Repositories
         /// Remove a range of entities
         /// </summary>
         /// <param name="entities"></param>
+        /// <param name="softDelete"></param>
+        /// <param name="saveChanges"></param>
         /// <returns></returns>
-        public async Task RemoveRangeAsync(IEnumerable<TEntity> entities, bool saveChanges = false)
+        public async Task RemoveRangeAsync(IEnumerable<TEntity> entities, bool softDelete = true, bool saveChanges = false)
         {
-            _dbContext.Set<TEntity>().RemoveRange(entities);
+            if (softDelete)
+            {
+                entities.ToList().ForEach(e => e.SetDeleted());
+                _dbContext.Entry(entities).State = EntityState.Modified;
+            }
+            else
+            {
+                _dbContext.Set<TEntity>().RemoveRange(entities);
+            }          
 
             if (saveChanges)
             {
@@ -133,6 +155,7 @@ namespace Database.Repositories
         /// <returns></returns>
         public async Task UpdateAsync(TEntity entity, bool saveChanges = false)
         {
+            entity.SetUpdatedAudit();
             _dbContext.Set<TEntity>().Update(entity);
 
             if (saveChanges)
@@ -148,6 +171,7 @@ namespace Database.Repositories
         /// <returns></returns>
         public async Task UpdateRangeAsync(IEnumerable<TEntity> entities, bool saveChanges = false)
         {
+            entities.ToList().ForEach(e => e.SetUpdatedAudit());
             _dbContext.Set<TEntity>().UpdateRange(entities);
 
             if (saveChanges)

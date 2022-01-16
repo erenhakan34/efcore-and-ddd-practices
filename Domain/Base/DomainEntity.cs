@@ -21,6 +21,23 @@ namespace Domain.Base
         {
             return Id.GetHashCode();
         }
+
+        public void SetUpdatedAudit(string updatedBy = null) 
+        {
+            UpdatedDateUtc = DateTime.UtcNow;
+            UpdatedBy = updatedBy;
+        }
+
+        public void SetCreatedAudit(string createdBy = null) 
+        {
+            CreatedDateUtc = DateTime.UtcNow;
+            CreatedBy = createdBy;
+        }
+
+        public void SetDeleted() 
+        {
+            IsDeleted = true;
+        }
     }
 
     public abstract class DomainEntity
