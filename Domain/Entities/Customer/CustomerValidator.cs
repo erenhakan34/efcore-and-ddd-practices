@@ -12,19 +12,34 @@ namespace Domain.Entities.Customer
             RuleFor(x => x.BirthDateUtc).Must(DateTimeUtils.IsNotDefaultDate);
             RuleFor(x => x.NationalityCode).NotEmpty().MaximumLength(10);
 
+            ValidateEmail();
+
+            ValidateMobileNumber();
+
+            ValidateAddress();
+        }
+
+        private void ValidateEmail()
+        {
             When(r => !string.IsNullOrEmpty(r.Email), () =>
             {
                 RuleFor(x => x.Email).EmailAddress().MaximumLength(50);
             });
+        }
 
+        private void ValidateMobileNumber()
+        {
             When(r => !string.IsNullOrEmpty(r.MobileCountryCode) || !string.IsNullOrEmpty(r.MobileAreaCode)
                         || !string.IsNullOrEmpty(r.MobileNumber), () =>
-            {
-                RuleFor(x => x.MobileCountryCode).NotEmpty().MaximumLength(5);
-                RuleFor(x => x.MobileAreaCode).NotEmpty().MaximumLength(5);
-                RuleFor(x => x.MobileNumber).NotEmpty().MaximumLength(15);
-            });
+                        {
+                            RuleFor(x => x.MobileCountryCode).NotEmpty().MaximumLength(5);
+                            RuleFor(x => x.MobileAreaCode).NotEmpty().MaximumLength(5);
+                            RuleFor(x => x.MobileNumber).NotEmpty().MaximumLength(15);
+                        });
+        }
 
+        private void ValidateAddress()
+        {
             When(r => r.Address != null, () =>
             {
                 RuleFor(x => x.Address.City).NotEmpty().MaximumLength(50);
