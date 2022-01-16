@@ -6,7 +6,6 @@ namespace Domain.Base
     {
         public TId Id { get; set; }
 
-
         public override bool Equals(object value)
         {
             if ((value is DomainEntity<TId> entity)) 
@@ -21,35 +20,35 @@ namespace Domain.Base
         {
             return Id.GetHashCode();
         }
+    }
 
-        public void SetUpdatedAudit(string updatedBy = null) 
+    public abstract class DomainEntity
+    {
+        public DateTime CreatedDateUtc { get; private set; }
+
+        public string CreatedBy { get; private set; }
+
+        public DateTime? UpdatedDateUtc { get; private set; }
+
+        public string UpdatedBy { get; private set; }
+
+        public bool IsDeleted { get; private set; }
+
+        public void SetUpdatedAudit(string updatedBy = null)
         {
             UpdatedDateUtc = DateTime.UtcNow;
             UpdatedBy = updatedBy;
         }
 
-        public void SetCreatedAudit(string createdBy = null) 
+        public void SetCreatedAudit(string createdBy = null)
         {
             CreatedDateUtc = DateTime.UtcNow;
             CreatedBy = createdBy;
         }
 
-        public void SetDeleted() 
+        public void SetDeleted()
         {
             IsDeleted = true;
         }
-    }
-
-    public abstract class DomainEntity
-    {
-        public DateTime CreatedDateUtc { get; set; }
-
-        public string CreatedBy { get; set; }
-
-        public DateTime? UpdatedDateUtc { get; set; }
-
-        public string UpdatedBy { get; set; }
-
-        public bool IsDeleted { get; set; }
     }
 }
