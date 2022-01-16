@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database", "Database\Databa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{ED1F53F9-FC27-4ACB-98E2-698574BF42C6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{A3FCC63E-E820-4B99-8A37-C3E448FE81C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{ED1F53F9-FC27-4ACB-98E2-698574BF42C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED1F53F9-FC27-4ACB-98E2-698574BF42C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED1F53F9-FC27-4ACB-98E2-698574BF42C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3FCC63E-E820-4B99-8A37-C3E448FE81C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3FCC63E-E820-4B99-8A37-C3E448FE81C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3FCC63E-E820-4B99-8A37-C3E448FE81C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3FCC63E-E820-4B99-8A37-C3E448FE81C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
