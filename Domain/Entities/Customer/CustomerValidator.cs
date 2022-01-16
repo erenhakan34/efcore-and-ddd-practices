@@ -3,7 +3,7 @@ using Infrastructure.Utils;
 
 namespace Domain.Entities.Customer
 {
-    public class CustomerValidator : AbstractValidator<Customer> 
+    public class CustomerValidator : AbstractValidator<Customer>
     {
         public CustomerValidator()
         {
@@ -31,11 +31,11 @@ namespace Domain.Entities.Customer
         {
             When(r => !string.IsNullOrEmpty(r.MobileCountryCode) || !string.IsNullOrEmpty(r.MobileAreaCode)
                         || !string.IsNullOrEmpty(r.MobileNumber), () =>
-                        {
-                            RuleFor(x => x.MobileCountryCode).NotEmpty().MaximumLength(5);
-                            RuleFor(x => x.MobileAreaCode).NotEmpty().MaximumLength(5);
-                            RuleFor(x => x.MobileNumber).NotEmpty().MaximumLength(15);
-                        });
+           {
+               RuleFor(x => x.MobileCountryCode).NotEmpty().MaximumLength(5);
+               RuleFor(x => x.MobileAreaCode).NotEmpty().MaximumLength(5);
+               RuleFor(x => x.MobileNumber).NotEmpty().MaximumLength(15);
+           });
         }
 
         private void ValidateAddress()
@@ -64,7 +64,7 @@ namespace Domain.Entities.Customer
         }
     }
 
-    public class NativeCustomerValidator : AbstractValidator<NativeCustomer> 
+    public class NativeCustomerValidator : AbstractValidator<NativeCustomer>
     {
         public NativeCustomerValidator()
         {
@@ -73,7 +73,7 @@ namespace Domain.Entities.Customer
         }
     }
 
-    public class ForeignCustomerValidator : AbstractValidator<ForeignCustomer> 
+    public class ForeignCustomerValidator : AbstractValidator<ForeignCustomer>
     {
         public ForeignCustomerValidator()
         {
