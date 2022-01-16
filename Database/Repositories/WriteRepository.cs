@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Database.Repositories
 {
-    public class WriteRepository<TEntity> : IWriteRepository<TEntity> where TEntity : DomainEntity<int>
+    public class WriteRepository<TId> : IWriteRepository<TId> where TId : struct
     {
         #region Readonly fields 
 
@@ -35,7 +35,7 @@ namespace Database.Repositories
         /// </summary>
         /// <param name="entity"></param>
         /// <returns>Number of added entities</returns>
-        public async Task<int> AddAsync(TEntity entity, bool saveChanges = false)
+        public async Task<int> AddAsync<TEntity>(TEntity entity, bool saveChanges = false) where TEntity : DomainEntity<TId>
         {
             int result = 0;
             entity.SetCreatedAudit();
@@ -54,7 +54,7 @@ namespace Database.Repositories
         /// </summary>
         /// <param name="entities"></param>
         /// <returns>Number of added entities</returns>
-        public async Task<int> AddRangeAsync(IEnumerable<TEntity> entities, bool saveChanges = false)
+        public async Task<int> AddRangeAsync<TEntity>(IEnumerable<TEntity> entities, bool saveChanges = false) where TEntity : DomainEntity<TId>
         {
             int result = 0;
             entities.ToList().ForEach(e => e.SetCreatedAudit());
@@ -72,9 +72,9 @@ namespace Database.Repositories
         /// Get all entities
         /// </summary>
         /// <returns></returns>
-        public async Task<IEnumerable<TEntity>> GetAllAsync()
+        public IQueryable<TEntity> GetAll<TEntity>() where TEntity : DomainEntity<TId>
         {
-            return await GetQueryableEntity().ToListAsync();
+            return _dbContext.Set<TEntity>().AsNoTracking();
         }
 
         /// <summary>
@@ -82,9 +82,9 @@ namespace Database.Repositories
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<TEntity> GetAsync(int id)
+        public IQueryable<TEntity> Get<TEntity>(TId id) where TEntity : DomainEntity<TId>
         {
-            return await GetQueryableEntity().FirstOrDefaultAsync(e => e.Id == id);
+            return GetAll<TEntity>().Where(e => e.Id.Equals(id));
         }
 
 
@@ -93,9 +93,9 @@ namespace Database.Repositories
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> expression)
+        public IQueryable<TEntity> Get<TEntity>(Expression<Func<TEntity, bool>> expression) where TEntity : DomainEntity<TId>
         {
-            return await GetQueryableEntity().FirstOrDefaultAsync(expression);
+            return GetAll<TEntity>().Where(expression);
         }
 
         /// <summary>
@@ -105,14 +105,14 @@ namespace Database.Repositories
         /// <param name="softDelete"></param>
         /// <param name="saveChanges"></param>
         /// <returns></returns>
-        public async Task RemoveAsync(TEntity entity, bool softDelete = true,  bool saveChanges = false)
+        public async Task RemoveAsync<TEntity>(TEntity entity, bool softDelete = true, bool saveChanges = false) where TEntity : DomainEntity<TId>
         {
             if (softDelete)
             {
                 entity.SetDeleted();
                 _dbContext.Entry(entity).State = EntityState.Modified;
             }
-            else 
+            else
             {
                 _dbContext.Set<TEntity>().Remove(entity);
             }
@@ -130,7 +130,7 @@ namespace Database.Repositories
         /// <param name="softDelete"></param>
         /// <param name="saveChanges"></param>
         /// <returns></returns>
-        public async Task RemoveRangeAsync(IEnumerable<TEntity> entities, bool softDelete = true, bool saveChanges = false)
+        public async Task RemoveRangeAsync<TEntity>(IEnumerable<TEntity> entities, bool softDelete = true, bool saveChanges = false) where TEntity : DomainEntity<TId>
         {
             if (softDelete)
             {
@@ -140,7 +140,7 @@ namespace Database.Repositories
             else
             {
                 _dbContext.Set<TEntity>().RemoveRange(entities);
-            }          
+            }
 
             if (saveChanges)
             {
@@ -153,7 +153,7 @@ namespace Database.Repositories
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public async Task UpdateAsync(TEntity entity, bool saveChanges = false)
+        public async Task UpdateAsync<TEntity>(TEntity entity, bool saveChanges = false) where TEntity : DomainEntity<TId>
         {
             entity.SetUpdatedAudit();
             _dbContext.Set<TEntity>().Update(entity);
@@ -169,7 +169,7 @@ namespace Database.Repositories
         /// </summary>
         /// <param name="entities"></param>
         /// <returns></returns>
-        public async Task UpdateRangeAsync(IEnumerable<TEntity> entities, bool saveChanges = false)
+        public async Task UpdateRangeAsync<TEntity>(IEnumerable<TEntity> entities, bool saveChanges = false) where TEntity : DomainEntity<TId>
         {
             entities.ToList().ForEach(e => e.SetUpdatedAudit());
             _dbContext.Set<TEntity>().UpdateRange(entities);
@@ -178,6 +178,26 @@ namespace Database.Repositories
             {
                 await _dbContext.SaveChangesAsync();
             }
+        }
+
+        /// <summary>
+        /// Check entity if exists
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public async Task<bool> ExistsAsync<TEntity>(Expression<Func<TEntity, bool>> expression) where TEntity : DomainEntity<TId>
+        {
+            return await _dbContext.Set<TEntity>().AnyAsync(expression);
+        }
+
+        /// <summary>
+        /// Get counts of entity by giving criteria
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public async Task<int> GetCountAsync<TEntity>(Expression<Func<TEntity, bool>> expression) where TEntity : DomainEntity<TId>
+        {
+            return await _dbContext.Set<TEntity>().CountAsync(expression);
         }
 
 
@@ -221,14 +241,5 @@ namespace Database.Repositories
         }
 
         #endregion
-
-        #region Private Methods 
-
-        private IQueryable<TEntity> GetQueryableEntity()
-        {
-            return _dbContext.Set<TEntity>().AsNoTracking();
-        }
-
-        #endregion 
     }
 }

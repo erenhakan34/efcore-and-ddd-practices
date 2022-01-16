@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Database.Repositories
 {
-    public class ReadRepository<TEntity> : IReadRepository<TEntity> where TEntity : DomainEntity<int>
+    public class ReadRepository<TId> : IReadRepository<TId> where TId : struct
     {
         #region Readonly fields 
 
@@ -34,9 +34,9 @@ namespace Database.Repositories
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<TEntity> GetAsync(int id)
+        public IQueryable<TEntity> Get<TEntity>(TId id) where TEntity : DomainEntity<TId>
         {
-            return await GetQueryableEntity().FirstOrDefaultAsync(e => e.Id == id);
+            return GetAll<TEntity>().Where(e => e.Id.Equals(id));
         }
 
         /// <summary>
@@ -44,27 +44,38 @@ namespace Database.Repositories
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> expression)
+        public IQueryable<TEntity> Get<TEntity>(Expression<Func<TEntity, bool>> expression) where TEntity : DomainEntity<TId>
         {
-            return await GetQueryableEntity().FirstOrDefaultAsync(expression);
+            return GetAll<TEntity>().Where(expression);
         }
 
         /// <summary>
         /// Get all entities
         /// </summary>
         /// <returns></returns>
-        public async Task<IEnumerable<TEntity>> GetAllAsync()
-        {
-            return await GetQueryableEntity().ToListAsync();
-        }
-
-        #endregion
-
-        #region Private Methods 
-
-        private IQueryable<TEntity> GetQueryableEntity()
+        public IQueryable<TEntity> GetAll<TEntity>() where TEntity : DomainEntity<TId>
         {
             return _dbContext.Set<TEntity>().AsNoTracking();
+        }
+
+        /// <summary>
+        /// Check entity if exists
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public async Task<bool> ExistsAsync<TEntity>(Expression<Func<TEntity, bool>> expression) where TEntity : DomainEntity<TId>
+        {
+            return await _dbContext.Set<TEntity>().AnyAsync(expression);
+        }
+
+        /// <summary>
+        /// Get counts of entity by giving criteria
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public async Task<int> GetCountAsync<TEntity>(Expression<Func<TEntity, bool>> expression) where TEntity : DomainEntity<TId>
+        {
+            return await _dbContext.Set<TEntity>().CountAsync(expression);
         }
 
         #endregion

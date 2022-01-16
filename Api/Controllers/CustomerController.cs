@@ -9,10 +9,10 @@ namespace Api.Controllers
 {
     public class CustomerController : ControllerBase
     {
-        private readonly IReadRepository<Customer> _readRepository;
-        private readonly IWriteRepository<Customer> _writeRepository;
+        private readonly IReadRepository<int> _readRepository;
+        private readonly IWriteRepository<int> _writeRepository;
 
-        public CustomerController(IReadRepository<Customer> readRepository, IWriteRepository<Customer> writeRepository)
+        public CustomerController(IReadRepository<int> readRepository, IWriteRepository<int> writeRepository)
         {
             _readRepository = readRepository;
             _writeRepository = writeRepository;
@@ -38,14 +38,14 @@ namespace Api.Controllers
         [HttpGet("[controller].customers/id)]")]
         public async Task<IActionResult> GetCustomerById(int id) 
         {
-            var customer = await _readRepository.GetAsync(id);
+            var customer = _readRepository.Get<NativeCustomer>(id);
             return Ok(customer);
         }
 
         [HttpGet("[controller].customers)]")]
         public async Task<IActionResult> GetAllCustomers()
         {
-            var customers = await _readRepository.GetAllAsync();
+            var customers = _readRepository.GetAll<NativeCustomer>();
             return Ok(customers);
         }
 
@@ -53,7 +53,7 @@ namespace Api.Controllers
         [HttpPut("[controller].customers)]")]
         public async Task<IActionResult> UpdateCustomer()
         {
-            var nativeCustomer = (await _readRepository.GetAllAsync()).FirstOrDefault();
+            var nativeCustomer = _readRepository.GetAll<NativeCustomer>().FirstOrDefault();
             nativeCustomer.SetEmail("xxxxx@gmail.com");
 
             await _writeRepository.UpdateAsync(nativeCustomer);
@@ -64,7 +64,7 @@ namespace Api.Controllers
         [HttpDelete("[controller].customers)]")]
         public async Task<IActionResult> DeleteCustomerSoftly()
         {
-            var nativeCustomer = (await _readRepository.GetAllAsync()).FirstOrDefault();
+            var nativeCustomer = _readRepository.GetAll<NativeCustomer>().FirstOrDefault();
 
             await _writeRepository.RemoveAsync(nativeCustomer);
 
