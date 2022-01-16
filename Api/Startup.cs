@@ -34,7 +34,11 @@ namespace Api
             services.AddScoped<IReadRepository<int>, ReadRepository<int>>();
             services.AddScoped<IWriteRepository<int>, WriteRepository<int>>();
 
-            services.AddControllers();
+            services.AddControllers(config => 
+            {
+                config.Filters.Add(new TransactionManagerFilter());
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Api", Version = "v1" });
