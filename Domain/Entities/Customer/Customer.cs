@@ -1,11 +1,13 @@
 ﻿using Domain.Base;
 using Domain.ValueObjects;
+using FluentValidation;
 using System;
 
 namespace Domain.Entities.Customer
 {
     public abstract class Customer : DomainEntity<int>
     {
+        private readonly CustomerValidator _validator;
 
         public Customer(string firstName,
             string lastName,
@@ -16,6 +18,9 @@ namespace Domain.Entities.Customer
             LastName = lastName;
             BirthDateUtc = birthDateUtc;
             NationalityCode = nationalityCode;
+
+            _validator = new CustomerValidator();
+            _validator.ValidateAndThrow(this);
         }
 
         public string FirstName { get; private set; }
@@ -53,31 +58,41 @@ namespace Domain.Entities.Customer
             }
         }
 
-        public Customer SetEmail(string email) 
+        public Customer SetEmail(string email)
         {
-            //Validate input
+            if (string.IsNullOrEmpty(email))
+                throw new ArgumentNullException(nameof(email));
 
             Email = email;
+            _validator.ValidateAndThrow(this);
             return this;
         }
 
-        public Customer SetMobileNumber(string mobileCountryCode, string mobileAreaCode, string mobileNumber) 
+        public Customer SetMobileNumber(string mobileCountryCode, string mobileAreaCode, string mobileNumber)
         {
-            //Validate input
+            if (string.IsNullOrEmpty(mobileCountryCode))
+                throw new ArgumentNullException(nameof(mobileCountryCode));
+
+            if (string.IsNullOrEmpty(mobileAreaCode))
+                throw new ArgumentNullException(nameof(mobileAreaCode));
+
+            if (string.IsNullOrEmpty(mobileNumber))
+                throw new ArgumentNullException(nameof(mobileNumber));
 
             MobileCountryCode = mobileCountryCode;
             MobileAreaCode = mobileAreaCode;
             MobileNumber = mobileNumber;
-
+            _validator.ValidateAndThrow(this);
             return this;
         }
 
-        public Customer SetAddress(Address address) 
+        public Customer SetAddress(Address address)
         {
-            //Validate input
+            if(address == null)
+                throw new ArgumentNullException(nameof(address));
 
             Address = address;
-
+            _validator.ValidateAndThrow(this);
             return this;
         }
     }
