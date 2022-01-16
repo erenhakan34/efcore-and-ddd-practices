@@ -16,11 +16,20 @@ namespace Api
             if (actionExecutedContext.Exception == null)
             {
                 await dbContext.SaveChangesAsync();
-                await dbContext.Database.CurrentTransaction?.CommitAsync();
+
+                await CommitTransactionAsyncIfNotNull(dbContext);
             }
             else 
             {
                 await dbContext.Database.CurrentTransaction?.RollbackAsync();
+            }
+        }
+
+        private static async Task CommitTransactionAsyncIfNotNull(EFCoreDbContext dbContext)
+        {
+            if (dbContext.Database.CurrentTransaction != null)
+            {
+                await dbContext.Database.CurrentTransaction?.CommitAsync();
             }
         }
     }
