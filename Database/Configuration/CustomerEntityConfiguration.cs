@@ -8,6 +8,8 @@ namespace Database.Configuration
     {
         public void Configure(EntityTypeBuilder<Customer> customer)
         {
+            customer.ToTable("Customers");
+
             customer.HasIndex(c => c.Id)
                 .IsClustered()
                 .IsUnique();
