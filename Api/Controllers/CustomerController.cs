@@ -1,8 +1,10 @@
 ﻿using Domain.Entities.Customer;
 using Domain.Ports;
+using Domain.Specifications;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -36,12 +38,33 @@ namespace Api.Controllers
             await _writeRepository.BeginTransactionAsync();
             await _writeRepository.AddAsync(nativeCustomer);
 
-            #endregion 
+
+            List<NativeCustomer> nativeCustomerList = new List<NativeCustomer>();
+
+            citizenNumber = "22211133355";
+            firstName = "Ali";
+            lastName = "Test";
+            NativeCustomer nativeCustomer2 = new NativeCustomer(citizenNumber, firstName, lastName, birthDateUtc, nationalityCode);
+            nativeCustomer2.SetEmail("bbbbbb@gmail.com");
+            nativeCustomerList.Add(nativeCustomer2);
+
+            citizenNumber = "33311122255";
+            firstName = "Mehmet";
+            lastName = "Test";
+            NativeCustomer nativeCustomer3 = new NativeCustomer(citizenNumber, firstName, lastName, birthDateUtc, nationalityCode);
+            nativeCustomer3.SetEmail("kkkkkk@gmail.com");
+            nativeCustomerList.Add(nativeCustomer3);
+
+            await _writeRepository.AddRangeAsync(nativeCustomerList);
+
+            #endregion
 
             #region Add foreign customer
 
             string passportNumber = "D10GH45H";
             nationalityCode = "DE";
+            firstName = "John";
+            lastName = "Travolta";
 
             ForeignCustomer foreignCustomer = new ForeignCustomer(passportNumber, firstName, lastName, birthDateUtc, nationalityCode);
             await _writeRepository.AddAsync(foreignCustomer);
@@ -63,7 +86,11 @@ namespace Api.Controllers
         {
             var nativeCustomers = await _readRepository.GetAll<NativeCustomer>().ToListAsync();
             var foreignCustomers = await _readRepository.GetAll<ForeignCustomer>().ToListAsync();
-            return Ok(new { nativeCustomers, foreignCustomers });
+
+            var orderedCustomersByEmail = await _readRepository.GetAll<Customer>()
+                .OrderByEmailDesc<Customer>().ToListAsync();
+
+            return Ok(new { nativeCustomers, foreignCustomers, orderedCustomersByEmail });
         }
 
 
