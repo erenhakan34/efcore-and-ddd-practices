@@ -50,74 +50,23 @@ namespace Domain.Entities.Customer
             }
         }
 
-        public Customer AddEmail(string email) 
+        public Customer SetEmail(string email) 
         {
             //Validate input
-
-            if (IsEmailSetBefore()) 
-            {
-                throw new InvalidOperationException("Email is already set");
-            }
 
             Email = email;
             return this;
         }
 
-        public Customer AddMobileNumber(string mobileCountryCode, string mobileAreaCode, string mobileNumber) 
+        public Customer SetMobileNumber(string mobileCountryCode, string mobileAreaCode, string mobileNumber) 
         {
             //Validate input
-
-            if (IsMobileNumberSetBefore()) 
-            {
-                throw new InvalidOperationException("Mobile number is already set");
-            }
 
             MobileCountryCode = mobileCountryCode;
             MobileAreaCode = mobileAreaCode;
             MobileNumber = mobileNumber;
 
             return this;
-        }
-
-
-        public Customer UpdateEmail(string email)
-        {
-            //Validate inout
-
-            if (!IsEmailSetBefore())
-            {
-                throw new InvalidOperationException("Email has to be set first");
-            }
-
-            Email = email;
-            return this;
-        }
-
-        public Customer UpdateMobileNumber(string mobileCountryCode, string mobileAreaCode, string mobileNumber) 
-        {
-            //Validate input
-
-            if (!IsMobileNumberSetBefore()) 
-            {
-                throw new InvalidOperationException("Mobile number has to be set first");
-            }
-
-            MobileCountryCode = mobileCountryCode;
-            MobileAreaCode = mobileAreaCode;
-            MobileNumber = mobileNumber;
-            return this;
-        }
-
-        private bool IsMobileNumberSetBefore() 
-        {
-            return !string.IsNullOrEmpty(MobileCountryCode) 
-                && !string.IsNullOrEmpty(MobileAreaCode)
-                && !string.IsNullOrEmpty(MobileNumber);
-        }
-
-        private bool IsEmailSetBefore() 
-        {
-            return !string.IsNullOrEmpty(Email);
         }
     }
 }
