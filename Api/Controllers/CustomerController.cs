@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace Api.Controllers
 {
+    /// <summary>
+    /// !!! Dummy data seeded for test purpose. Command or query data is not given from outside for now !!!
+    /// </summary>
     public class CustomerController : ControllerBase
     {
         private readonly IReadRepository<int> _readRepository;
@@ -87,10 +90,10 @@ namespace Api.Controllers
             var nativeCustomers = await _readRepository.GetAll<NativeCustomer>().ToListAsync();
             var foreignCustomers = await _readRepository.GetAll<ForeignCustomer>().ToListAsync();
 
-            var orderedCustomersByEmail = await _readRepository.GetAll<Customer>()
-                .OrderByEmailDesc<Customer>().ToListAsync();
+            var orderedNativeCustomersByEmail = await _readRepository.GetAll<Customer>()
+                .OrderByEmailDesc().OfType<NativeCustomer>().ToListAsync();
 
-            return Ok(new { nativeCustomers, foreignCustomers, orderedCustomersByEmail });
+            return Ok(new { nativeCustomers, foreignCustomers, orderedNativeCustomersByEmail });
         }
 
 

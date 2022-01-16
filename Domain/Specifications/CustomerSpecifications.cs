@@ -6,17 +6,17 @@ namespace Domain.Specifications
 {
     public static class CustomerSpecifications
     {
-        public static IQueryable<TEntity> OrderByEmailDesc<TEntity>(this IQueryable<Customer> customerQuery) where TEntity : Customer
+        public static IQueryable<Customer> OrderByEmailDesc(this IQueryable<Customer> customerQuery)
         {
             return customerQuery
-                .OrderByDescending(c => c.Email).AsQueryable() as IQueryable<TEntity>;
+                .OrderByDescending(c => c.Email);
         }
 
-        public static IQueryable<TEntity> OrderByCityAsc<TEntity>(this IQueryable<Customer> customerQuery) where TEntity : Customer
+        public static IQueryable<Customer> OrderByCityAsc(this IQueryable<Customer> customerQuery)
         {
             return customerQuery
                 .Include(c => c.Address)
-                .OrderBy(c => c.Address.City).AsQueryable() as IQueryable<TEntity>;
+                .OrderBy(c => c.Address.City);
         }
     }
 }
