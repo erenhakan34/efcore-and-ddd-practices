@@ -14,7 +14,7 @@ namespace Domain.Entities.Customer
 
             When(r => !string.IsNullOrEmpty(r.Email), () =>
             {
-                RuleFor(x => x.Email).NotEmpty().EmailAddress().MaximumLength(50);
+                RuleFor(x => x.Email).EmailAddress().MaximumLength(50);
             });
 
             When(r => !string.IsNullOrEmpty(r.MobileCountryCode) || !string.IsNullOrEmpty(r.MobileAreaCode)
@@ -30,9 +30,21 @@ namespace Domain.Entities.Customer
                 RuleFor(x => x.Address.City).NotEmpty().MaximumLength(50);
                 RuleFor(x => x.Address.Town).NotEmpty().MaximumLength(50);
                 RuleFor(x => x.Address.Neighborhood).NotEmpty().MaximumLength(50);
-                RuleFor(x => x.Address.Street).MaximumLength(50);
-                RuleFor(x => x.Address.GateNumber).MaximumLength(6);
-                RuleFor(x => x.Address.ApartmentNumber).MaximumLength(6);
+
+                When(r => !string.IsNullOrEmpty(r.Address.Street), () =>
+                {
+                    RuleFor(x => x.Address.Street).MaximumLength(50);
+                });
+
+                When(r => !string.IsNullOrEmpty(r.Address.GateNumber), () =>
+                {
+                    RuleFor(x => x.Address.GateNumber).MaximumLength(6);
+                });
+
+                When(r => !string.IsNullOrEmpty(r.Address.ApartmentNumber), () =>
+                {
+                    RuleFor(x => x.Address.ApartmentNumber).MaximumLength(6);
+                });
             });
         }
     }
@@ -41,7 +53,8 @@ namespace Domain.Entities.Customer
     {
         public NativeCustomerValidator()
         {
-            RuleFor(x => x.CitizenNumber).NotEmpty().MaximumLength(11);
+            RuleFor(x => x.CitizenNumber).NotEmpty().Must(StringUtils.IsNumeric)
+                .Must(StringUtils.IsValidCitizenNumber).MaximumLength(11);
         }
     }
 
