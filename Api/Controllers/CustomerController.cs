@@ -93,7 +93,13 @@ namespace Api.Controllers
             var orderedNativeCustomersByEmail = await _readRepository.GetAll<Customer>()
                 .OrderByEmailDesc().OfType<NativeCustomer>().ToListAsync();
 
-            return Ok(new { nativeCustomers, foreignCustomers, orderedNativeCustomersByEmail });
+            var customersGreaterThan20Age = await _readRepository.GetAll<Customer>()
+                .GetCustomersGreaterThanAge(20).OfType<NativeCustomer>().ToListAsync();
+
+            var customersLessThan20Age = await _readRepository.GetAll<Customer>()
+                .GetCustomersLessThanAge(20).OfType<NativeCustomer>().ToListAsync();
+
+            return Ok(new { nativeCustomers, foreignCustomers, orderedNativeCustomersByEmail, customersGreaterThan20Age, customersLessThan20Age });
         }
 
 
