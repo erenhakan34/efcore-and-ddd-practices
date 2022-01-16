@@ -62,7 +62,7 @@ namespace Domain.Ports
         /// </summary>
         /// <param name="isolationLevel"></param>
         /// <returns></returns>
-        Task BeginTransactionAsync(IsolationLevel isolationLevel);
+        Task BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
 
         /// <summary>
         /// Commit current transaction
