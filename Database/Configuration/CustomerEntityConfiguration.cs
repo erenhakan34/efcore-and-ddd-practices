@@ -10,22 +10,21 @@ namespace Database.Configuration
         {
             customer.ToTable("Customers");
 
-            customer.HasIndex(c => c.Id)
-                .IsClustered()
-                .IsUnique();
-
             customer.Property(x => x.Id)              
                  .ValueGeneratedOnAdd()
                 .UseIdentityColumn(1, 1);
 
             customer.Property(x => x.FirstName)
-                .HasMaxLength(50);
+                .HasMaxLength(50)
+                .IsRequired();
 
             customer.Property(x => x.LastName)
-                .HasMaxLength(50);
+                .HasMaxLength(50)
+                .IsRequired();
 
             customer.Property(x => x.NationalityCode)
-                .HasMaxLength(10);
+                .HasMaxLength(10)
+                .IsRequired();
 
             customer.Property(x => x.Email)
                 .HasMaxLength(50);
@@ -41,6 +40,24 @@ namespace Database.Configuration
 
             customer.Ignore(c => c.FullName);
             customer.Ignore(c => c.Age);
+        }
+    }
+
+    public class NativeCustomerEntityConfiguration : IEntityTypeConfiguration<NativeCustomer> 
+    {
+        public void Configure(EntityTypeBuilder<NativeCustomer> nativeCustomer) 
+        {
+            nativeCustomer.Property(n => n.CitizenNumber)
+                .HasMaxLength(11);
+        }
+    }
+
+    public class ForeignCustomerEntityConfiguration : IEntityTypeConfiguration<ForeignCustomer>
+    {
+        public void Configure(EntityTypeBuilder<ForeignCustomer> foreignCustomer)
+        {
+            foreignCustomer.Property(n => n.PassportNumber)
+                .HasMaxLength(10);
         }
     }
 }
