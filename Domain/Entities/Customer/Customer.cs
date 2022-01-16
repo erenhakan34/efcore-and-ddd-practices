@@ -1,4 +1,5 @@
 ﻿using Domain.Base;
+using Domain.ValueObjects;
 using System;
 
 namespace Domain.Entities.Customer
@@ -35,6 +36,8 @@ namespace Domain.Entities.Customer
 
         public string NationalityCode { get; private set; }
 
+        public Address Address { get; private set; }
+
         public int Age
         {
             get
@@ -65,6 +68,15 @@ namespace Domain.Entities.Customer
             MobileCountryCode = mobileCountryCode;
             MobileAreaCode = mobileAreaCode;
             MobileNumber = mobileNumber;
+
+            return this;
+        }
+
+        public Customer SetAddress(Address address) 
+        {
+            //Validate input
+
+            Address = address;
 
             return this;
         }

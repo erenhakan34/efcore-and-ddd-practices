@@ -10,7 +10,7 @@ namespace Database.Configuration
         {
             customer.ToTable("Customers");
 
-            customer.Property(x => x.Id)              
+            customer.Property(x => x.Id)
                  .ValueGeneratedOnAdd()
                 .UseIdentityColumn(1, 1);
 
@@ -38,14 +38,41 @@ namespace Database.Configuration
             customer.Property(x => x.MobileNumber)
                 .HasMaxLength(15);
 
+            customer.OwnsOne(p => p.Address, p =>
+            {
+                p.Property(c => c.City)
+                    .HasColumnName("City")
+                    .HasMaxLength(50);
+
+                p.Property(c => c.Town)
+                    .HasColumnName("Town")
+                    .HasMaxLength(50);
+
+                p.Property(c => c.Neighborhood)
+                    .HasColumnName("Neighborhood")
+                    .HasMaxLength(50);
+
+                p.Property(c => c.Street)
+                    .HasColumnName("Street")
+                    .HasMaxLength(50);
+
+                p.Property(c => c.GateNumber)
+                    .HasColumnName("GateNumber")
+                    .HasMaxLength(6);
+
+                p.Property(c => c.ApartmentNumber)
+                    .HasColumnName("ApartmentNumber")
+                    .HasMaxLength(6);
+            });
+
             customer.Ignore(c => c.FullName);
             customer.Ignore(c => c.Age);
         }
     }
 
-    public class NativeCustomerEntityConfiguration : IEntityTypeConfiguration<NativeCustomer> 
+    public class NativeCustomerEntityConfiguration : IEntityTypeConfiguration<NativeCustomer>
     {
-        public void Configure(EntityTypeBuilder<NativeCustomer> nativeCustomer) 
+        public void Configure(EntityTypeBuilder<NativeCustomer> nativeCustomer)
         {
             nativeCustomer.Property(n => n.CitizenNumber)
                 .HasMaxLength(11);
