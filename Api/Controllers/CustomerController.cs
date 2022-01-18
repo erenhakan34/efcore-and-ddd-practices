@@ -1,131 +1,53 @@
-﻿using Domain.Entities.Customer;
-using Domain.Ports;
-using Domain.Specifications;
+﻿using Business.CQRS.Customers.Commands;
+using Business.CQRS.Customers.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Api.Controllers
 {
-    /// <summary>
-    /// !!! Dummy data seeded for test purpose. Command or query data is not given from outside for now !!!
-    /// </summary>
     public class CustomerController : ControllerBase
     {
-        private readonly IReadRepository<int> _readRepository;
-        private readonly IWriteRepository<int> _writeRepository;
+        private readonly IMediator _mediator;
 
-        public CustomerController(IReadRepository<int> readRepository, IWriteRepository<int> writeRepository)
+        public CustomerController(IMediator mediator)
         {
-            _readRepository = readRepository;
-            _writeRepository = writeRepository;
+            _mediator = mediator;
         }
 
-        [HttpPost("[controller].customers)")]
-        public async Task<IActionResult> AddCustomer()
+        [HttpPost("[controller].createNativeCustomer)")]
+        public async Task<IActionResult> CreateNativeCustomer([FromBody] CreateNativeCustomerCommand command)
         {
-            #region Add native customer
+            await _mediator.Send(command);
+            return Ok();
+        }
 
-            string citizenNumber = "11122233344";
-            string firstName = "Hakan";
-            string lastName = "Eren";
-            string nationalityCode = "TR";
-            DateTime birthDateUtc = new DateTime(1990, 08, 14, 0, 0, 0, DateTimeKind.Utc);
+        [HttpPost("[controller].createForeignCustomer)")]
+        public async Task<IActionResult> CreateForeignCustomer([FromBody] CreateForeignCustomerCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok();
+        }
 
-            NativeCustomer nativeCustomer = new NativeCustomer(citizenNumber, firstName, lastName, birthDateUtc, nationalityCode);
-            nativeCustomer.SetEmail("xxxxxx@gmail.com").SetMobileNumber("90", "111", "1111111");
-
-            await _writeRepository.BeginTransactionAsync();
-            await _writeRepository.AddAsync(nativeCustomer);
-
-
-            List<NativeCustomer> nativeCustomerList = new List<NativeCustomer>();
-
-            citizenNumber = "22211133355";
-            firstName = "Ali";
-            lastName = "Test";
-            NativeCustomer nativeCustomer2 = new NativeCustomer(citizenNumber, firstName, lastName, birthDateUtc, nationalityCode);
-            nativeCustomer2.SetEmail("bbbbbb@gmail.com");
-            nativeCustomerList.Add(nativeCustomer2);
-
-            citizenNumber = "33311122255";
-            firstName = "Mehmet";
-            lastName = "Test";
-            NativeCustomer nativeCustomer3 = new NativeCustomer(citizenNumber, firstName, lastName, birthDateUtc, nationalityCode);
-            nativeCustomer3.SetEmail("kkkkkk@gmail.com");
-            nativeCustomerList.Add(nativeCustomer3);
-
-            await _writeRepository.AddRangeAsync(nativeCustomerList);
-
-            #endregion
-
-            #region Add foreign customer
-
-            string passportNumber = "D10GH45H";
-            nationalityCode = "DE";
-            firstName = "John";
-            lastName = "Travolta";
-
-            ForeignCustomer foreignCustomer = new ForeignCustomer(passportNumber, firstName, lastName, birthDateUtc, nationalityCode);
-            await _writeRepository.AddAsync(foreignCustomer);
-
-            #endregion
-
+        [HttpPut("[controller].updatePassportNumber)")]
+        public async Task<IActionResult> UpdatePassportNumber([FromBody] UpdatePassportNumberCommand command)
+        {
+            await _mediator.Send(command);
             return Ok();
         }
 
         [HttpGet("[controller].customers/id)")]
         public async Task<IActionResult> GetCustomerById(int id)
         {
-            var customer = await _readRepository.Get<Customer>(id).FirstOrDefaultAsync();
+            var customer = await _mediator.Send(new GetCustomerByIdQuery(id));
             return Ok(customer);
         }
 
         [HttpGet("[controller].customers)")]
         public async Task<IActionResult> GetAllCustomers()
         {
-            var nativeCustomers = await _readRepository.GetAll<NativeCustomer>().ToListAsync();
-            var foreignCustomers = await _readRepository.GetAll<ForeignCustomer>().ToListAsync();
-
-            var orderedNativeCustomersByEmail = await _readRepository.GetAll<Customer>()
-                .OrderByEmailDesc().OfType<NativeCustomer>().ToListAsync();
-
-            var customersGreaterThan20Age = await _readRepository.GetAll<Customer>()
-                .GetCustomersGreaterThanAge(20).OfType<NativeCustomer>().ToListAsync();
-
-            var customersLessThan20Age = await _readRepository.GetAll<Customer>()
-                .GetCustomersLessThanAge(20).OfType<NativeCustomer>().ToListAsync();
-
-            return Ok(new { nativeCustomers, foreignCustomers, orderedNativeCustomersByEmail, customersGreaterThan20Age, customersLessThan20Age });
-        }
-
-
-        [HttpPut("[controller].customers)")]
-        public async Task<IActionResult> UpdateCustomer()
-        {
-            await _writeRepository.BeginTransactionAsync();
-
-            var nativeCustomer = _readRepository.GetAll<NativeCustomer>().FirstOrDefault();
-            nativeCustomer.SetEmail("yyyyyy@gmail.com");
-
-            await _writeRepository.UpdateAsync(nativeCustomer);
-
-            return Ok();
-        }
-
-        [HttpDelete("[controller].customers)")]
-        public async Task<IActionResult> DeleteCustomerSoftly()
-        {
-            await _writeRepository.BeginTransactionAsync();
-
-            var nativeCustomer = _readRepository.GetAll<NativeCustomer>().FirstOrDefault();
-
-            await _writeRepository.RemoveAsync(nativeCustomer);
-
-            return Ok();
+            var customers = await _mediator.Send(new GetCustomersQuery());
+            return Ok(customers);
         }
     }
 }

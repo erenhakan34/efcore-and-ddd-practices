@@ -1,4 +1,5 @@
 ﻿using Domain.Base;
+using Domain.Events.CustomerEvents;
 using Domain.ValueObjects;
 using FluentValidation;
 using System;
@@ -27,8 +28,6 @@ namespace Domain.Entities.Customer
 
         public string LastName { get; private set; }
 
-        public string FullName { get; }
-
         public DateTime BirthDateUtc { get; private set; }
 
         public string Email { get; private set; }
@@ -42,6 +41,14 @@ namespace Domain.Entities.Customer
         public string NationalityCode { get; private set; }
 
         public Address Address { get; private set; }
+
+        public string FullName
+        {
+            get
+            {
+                return $"{FirstName} {LastName}";
+            }
+        }
 
         public int Age
         {
@@ -58,17 +65,19 @@ namespace Domain.Entities.Customer
             }
         }
 
-        public Customer SetEmail(string email)
+        public Customer AddEmail(string email)
         {
             if (string.IsNullOrEmpty(email))
                 throw new ArgumentNullException(nameof(email));
 
             Email = email;
             _validator.ValidateAndThrow(this);
+
+            AddEvent(new CustomerEmailUpdatedEvent(this));
             return this;
         }
 
-        public Customer SetMobileNumber(string mobileCountryCode, string mobileAreaCode, string mobileNumber)
+        public Customer AddMobileNumber(string mobileCountryCode, string mobileAreaCode, string mobileNumber)
         {
             if (string.IsNullOrEmpty(mobileCountryCode))
                 throw new ArgumentNullException(nameof(mobileCountryCode));
@@ -83,16 +92,20 @@ namespace Domain.Entities.Customer
             MobileAreaCode = mobileAreaCode;
             MobileNumber = mobileNumber;
             _validator.ValidateAndThrow(this);
+
+            AddEvent(new CustomerMobileNumberUpdatedEvent(this));
             return this;
         }
 
-        public Customer SetAddress(Address address)
+        public Customer AddAddress(Address address)
         {
-            if(address == null)
+            if (address == null)
                 throw new ArgumentNullException(nameof(address));
 
             Address = address;
             _validator.ValidateAndThrow(this);
+
+            AddEvent(new CustomerAddressUpdatedEvent(this));
             return this;
         }
     }

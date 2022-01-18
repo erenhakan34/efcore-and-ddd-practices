@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Domain.Events.CustomerEvents;
+using FluentValidation;
 using System;
 
 namespace Domain.Entities.Customer
@@ -16,6 +17,8 @@ namespace Domain.Entities.Customer
 
             _validator = new NativeCustomerValidator();
             _validator.ValidateAndThrow(this);
+
+            AddEvent(new CustomerCreatedEvent<NativeCustomer>(this));
         }
 
         public string CitizenNumber { get; private set; }

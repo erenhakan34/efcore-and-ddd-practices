@@ -1,6 +1,10 @@
+using Business.CQRS.Customers.Commands;
+using Business.CQRS.Customers.DTOs;
 using Database.Context;
 using Database.Repositories;
 using Domain.Ports;
+using Mapster;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +12,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
+using Newtonsoft;
+using System.Text.Json.Serialization;
 
 namespace Api
 {
@@ -34,9 +41,16 @@ namespace Api
             services.AddScoped<IReadRepository<int>, ReadRepository<int>>();
             services.AddScoped<IWriteRepository<int>, WriteRepository<int>>();
 
-            services.AddControllers(config => 
+            services.AddMediatR(typeof(CreateNativeCustomerCommand));
+
+            TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetAssembly(typeof(CustomerResultDTO)));
+
+            services.AddControllers(config =>
             {
                 config.Filters.Add(new TransactionManagerFilter());
+            }).AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             });
 
             services.AddSwaggerGen(c =>

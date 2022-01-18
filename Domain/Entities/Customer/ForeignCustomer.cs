@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Domain.Events.CustomerEvents;
+using FluentValidation;
 using System;
 
 namespace Domain.Entities.Customer
@@ -17,6 +18,8 @@ namespace Domain.Entities.Customer
 
             _validator = new ForeignCustomerValidator();
             _validator.ValidateAndThrow(this);
+
+            AddEvent(new CustomerCreatedEvent<ForeignCustomer>(this));
         }
 
         public string PassportNumber { get; private set; }
@@ -26,9 +29,10 @@ namespace Domain.Entities.Customer
             if (string.IsNullOrEmpty(passportNumber))
                 throw new ArgumentNullException(nameof(passportNumber));
 
-
             PassportNumber = passportNumber;
             _validator.ValidateAndThrow(this);
+
+            AddEvent(new ForeignCustomerPassportUpdatedEvent(this));
         }
     }
 }

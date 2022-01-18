@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Domain.Events;
+using System;
+using System.Collections.Generic;
 
 namespace Domain.Base
 {
@@ -6,9 +8,16 @@ namespace Domain.Base
     {
         public TId Id { get; set; }
 
+        public List<object> Events = new List<object>();
+
+        public void AddEvent(object domainEvent)
+        {
+            Events.Add(domainEvent);
+        }
+
         public override bool Equals(object value)
         {
-            if ((value is DomainEntity<TId> entity)) 
+            if ((value is DomainEntity<TId> entity))
             {
                 return entity.Id.ToString() == Id.ToString();
             }

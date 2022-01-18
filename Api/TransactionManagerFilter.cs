@@ -21,7 +21,7 @@ namespace Api
             }
             else 
             {
-                await dbContext.Database.CurrentTransaction?.RollbackAsync();
+                await RollbackTransactionAsyncIfNotNull(dbContext);
             }
         }
 
@@ -30,6 +30,14 @@ namespace Api
             if (dbContext.Database.CurrentTransaction != null)
             {
                 await dbContext.Database.CurrentTransaction?.CommitAsync();
+            }
+        }
+
+        private static async Task RollbackTransactionAsyncIfNotNull(EFCoreDbContext dbContext)
+        {
+            if (dbContext.Database.CurrentTransaction != null)
+            {
+                await dbContext.Database.CurrentTransaction?.RollbackAsync();
             }
         }
     }
