@@ -13,7 +13,7 @@ namespace Domain.Events.CustomerEvents
 
         public override string ToString()
         {
-            return $"{nameof(EventBody)} is created with id = { EventBody.Id}";
+            return $"{typeof(TCustomer).FullName} is created with name and surname = { EventBody.FirstName} {EventBody.LastName}";
         }
     }
 }
