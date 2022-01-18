@@ -29,10 +29,10 @@ namespace Domain.Entities.Customer
             if (string.IsNullOrEmpty(passportNumber))
                 throw new ArgumentNullException(nameof(passportNumber));
 
+            AddEvent(new ForeignCustomerPassportUpdatedEvent(this, PassportNumber, passportNumber));
+
             PassportNumber = passportNumber;
             _validator.ValidateAndThrow(this);
-
-            AddEvent(new ForeignCustomerPassportUpdatedEvent(this));
         }
     }
 }

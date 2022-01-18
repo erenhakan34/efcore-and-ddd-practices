@@ -70,10 +70,11 @@ namespace Domain.Entities.Customer
             if (string.IsNullOrEmpty(email))
                 throw new ArgumentNullException(nameof(email));
 
+            AddEvent(new CustomerEmailUpdatedEvent(this, Email, email));
+
             Email = email;
             _validator.ValidateAndThrow(this);
 
-            AddEvent(new CustomerEmailUpdatedEvent(this));
             return this;
         }
 
@@ -88,12 +89,14 @@ namespace Domain.Entities.Customer
             if (string.IsNullOrEmpty(mobileNumber))
                 throw new ArgumentNullException(nameof(mobileNumber));
 
+            AddEvent(new CustomerMobileNumberUpdatedEvent(this, ToFullMobileNumber(MobileCountryCode, mobileAreaCode, MobileNumber),
+                ToFullMobileNumber(mobileCountryCode, mobileAreaCode, mobileNumber)));
+
             MobileCountryCode = mobileCountryCode;
             MobileAreaCode = mobileAreaCode;
             MobileNumber = mobileNumber;
             _validator.ValidateAndThrow(this);
 
-            AddEvent(new CustomerMobileNumberUpdatedEvent(this));
             return this;
         }
 
@@ -102,11 +105,13 @@ namespace Domain.Entities.Customer
             if (address == null)
                 throw new ArgumentNullException(nameof(address));
 
+            AddEvent(new CustomerAddressUpdatedEvent(this, Address, address));
+
             Address = address;
             _validator.ValidateAndThrow(this);
-
-            AddEvent(new CustomerAddressUpdatedEvent(this));
             return this;
         }
+
+        public string ToFullMobileNumber(string part1, string part2, string part3) => $"{part1}{part2}{part3}";
     }
 }
