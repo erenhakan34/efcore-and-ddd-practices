@@ -19,7 +19,7 @@ namespace Domain.Entities.Customer
             _validator = new ForeignCustomerValidator();
             _validator.ValidateAndThrow(this);
 
-            AddEvent(new CustomerCreatedEvent<ForeignCustomer>(this));
+            AddEvent(new ForeignCustomerCreatedEvent(this));
         }
 
         public string PassportNumber { get; private set; }

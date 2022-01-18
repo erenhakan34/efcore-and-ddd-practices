@@ -18,7 +18,7 @@ namespace Domain.Entities.Customer
             _validator = new NativeCustomerValidator();
             _validator.ValidateAndThrow(this);
 
-            AddEvent(new CustomerCreatedEvent<NativeCustomer>(this));
+            AddEvent(new NativeCustomerCreatedEvent(this));
         }
 
         public string CitizenNumber { get; private set; }
