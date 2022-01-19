@@ -1,3 +1,4 @@
+using Api.Middlewares;
 using Business;
 using Database;
 using Microsoft.AspNetCore.Builder;
@@ -34,7 +35,7 @@ namespace Api
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                app.UseExceptionHandlingMiddleware();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Api v1"));
             }
