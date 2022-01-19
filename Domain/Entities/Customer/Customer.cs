@@ -2,6 +2,7 @@
 using Domain.Events.CustomerEvents;
 using Domain.ValueObjects;
 using FluentValidation;
+using Infrastructure.Extensions;
 using System;
 
 namespace Domain.Entities.Customer
@@ -102,7 +103,7 @@ namespace Domain.Entities.Customer
 
         public Customer AddAddress(Address address)
         {
-            if (address == null)
+            if (address.IsNull())
                 throw new ArgumentNullException(nameof(address));
 
             AddEvent(new CustomerAddressUpdatedEvent(this, Address, address));

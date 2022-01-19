@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Infrastructure.Extensions;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Domain.Base
@@ -24,20 +25,20 @@ namespace Domain.Base
 
         public override bool Equals(object obj)
         {
-            if (obj == null || obj.GetType() != GetType())
+            if (obj.IsNull() || obj.GetType() != GetType())
             {
                 return false;
             }
 
             var other = (ValueObject)obj;
 
-            return this.GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
+            return GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
         }
 
         public override int GetHashCode()
         {
             return GetEqualityComponents()
-                .Select(x => x != null ? x.GetHashCode() : 0)
+                .Select(x => x.IsNotNull() ? x.GetHashCode() : 0)
                 .Aggregate((x, y) => x ^ y);
         }
     }

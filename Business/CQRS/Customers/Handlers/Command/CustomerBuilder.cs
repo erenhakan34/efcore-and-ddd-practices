@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.Customer;
 using Domain.ValueObjects;
+using Infrastructure.Extensions;
 
 namespace Business.CQRS.Customers.Handlers.Command
 {
@@ -32,7 +33,7 @@ namespace Business.CQRS.Customers.Handlers.Command
 
         public CustomerBuilder AddAddress(Address address) 
         {
-            if (address == null)
+            if (address.IsNull())
                 return this;
 
             _customer.AddAddress(address);

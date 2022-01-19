@@ -1,4 +1,5 @@
 ﻿using Database.Context;
+using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace Api.Filters
 
             var dbContext = (EFCoreDbContext)actionExecutedContext.HttpContext.RequestServices.GetService(typeof(EFCoreDbContext));
 
-            if (actionExecutedContext.Exception == null)
+            if (actionExecutedContext.Exception.IsNull())
             {
                 await dbContext.SaveChangesAsync();
 
@@ -27,7 +28,7 @@ namespace Api.Filters
 
         private static async Task CommitTransactionAsyncIfNotNull(EFCoreDbContext dbContext)
         {
-            if (dbContext.Database.CurrentTransaction != null)
+            if (dbContext.Database.CurrentTransaction.IsNotNull())
             {
                 await dbContext.Database.CurrentTransaction?.CommitAsync();
             }
@@ -35,7 +36,7 @@ namespace Api.Filters
 
         private static async Task RollbackTransactionAsyncIfNotNull(EFCoreDbContext dbContext)
         {
-            if (dbContext.Database.CurrentTransaction != null)
+            if (dbContext.Database.CurrentTransaction.IsNotNull())
             {
                 await dbContext.Database.CurrentTransaction?.RollbackAsync();
             }
