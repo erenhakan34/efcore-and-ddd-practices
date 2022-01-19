@@ -23,7 +23,7 @@ namespace Domain.Entities.Product
 
         public string Name { get; private set; }
 
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get; private set; }
 
         public string Description { get; private set; }
 
