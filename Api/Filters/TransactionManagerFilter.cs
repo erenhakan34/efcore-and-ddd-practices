@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Threading.Tasks;
 
-namespace Api
+namespace Api.Filters
 {
     public class TransactionManagerFilter : IAsyncActionFilter
     {
