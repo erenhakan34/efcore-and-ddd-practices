@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Infrastructure.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -35,7 +36,11 @@ namespace Api.Middlewares
             }
             catch
             {
-                throw;
+                httpContext.Response.ContentType = DefaultContentType;
+                httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                var exceptionBody = JsonConvert.SerializeObject(new Error { Code = "Unidentified", Message = "Şu anda işleminizi gerçekleştiremiyoruz." });
+                await httpContext.Response.WriteAsync(exceptionBody);
             }
         }
     }
